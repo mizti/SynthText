@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.swp
 
 # C extensions
 *.so
@@ -88,3 +89,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# data and result
+data/*
+result/*
