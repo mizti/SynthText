@@ -1,8 +1,9 @@
-uthor: Ankush Gupta
+# Author: Ankush Gupta
 # Date: 2015
 
 """
 Entry-point for generating synthetic text images, as described in:
+
 @InProceedings{Gupta16,
       author       = "Gupta, A. and Vedaldi, A. and Zisserman, A.",
       title        = "Synthetic Data for Text Localisation in Natural Images",
@@ -76,20 +77,21 @@ def main(viz=False):
   # open databases:
   print colorize(Color.BLUE,'getting data..',bold=True)
   db = get_data()
-  print colorize(Color.BLUE,'\t-> done',bold=True)
-
-  # open the output h5 file:
-  out_db = h5py.File(OUT_FILE,'w')
-  out_db.create_group('/data')
-  print colorize(Color.GREEN,'Storing the output in: '+OUT_FILE, bold=True)
 
   # get the names of the image files in the dataset:
   imnames = sorted(db['image'].keys())
-  N = len(imnames)
-  global NUM_IMG
-  if NUM_IMG < 0:
-    NUM_IMG = N
-  start_idx,end_idx = 0,min(NUM_IMG, N)
+
+  print(db['image'])
+  print(db['image'].__class__)
+
+  print(db['seg'])
+  print(db['seg'].__class__)
+  print(db)
+  print(db.__class__)
+
+  depth = h5py.File('data/depth.h5','r')
+
+  exit()
 
   RV3 = RendererV3(DATA_PATH,max_time=SECS_PER_IMG)
   for i in xrange(start_idx,end_idx):
@@ -97,6 +99,8 @@ def main(viz=False):
     try:
       # get the image:
       img = Image.fromarray(db['image'][imname][:])
+      print(img.__class__)
+      exit()
       # get the pre-computed depth:
       #  there are 2 estimates of depth (represented as 2 "channels")
       #  here we are using the second one (in some cases it might be

@@ -26,10 +26,6 @@ def main(db_fname):
             txt = flatten(txt)
             print(txt)
 
-            print(wordBB.shape)
-            print(wordBB.shape[-1])
-            print(wordBB)
-
             plt.close(1)
             plt.figure(1)
             plt.imshow(rgb)

@@ -101,8 +101,8 @@ class RenderFont(object):
         self.baselinestate = BaselineState()
 
         # text-source : gets english text:
-        self.text_source = TextSource(min_nchar=self.min_nchar,
-                                      fn=osp.join(data_dir,'newsgroup/newsgroup.txt'))
+        #self.text_source = TextSource(min_nchar=self.min_nchar, fn=osp.join(data_dir,'newsgroup/newsgroup.txt'))
+        self.text_source = TextSource(min_nchar=self.min_nchar, fn=osp.join(data_dir,'dic/dicdata.txt'))
 
         # get font-state object:
         self.font_state = FontState(data_dir)

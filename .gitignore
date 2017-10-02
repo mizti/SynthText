@@ -93,3 +93,10 @@ ENV/
 # data and result
 data/*
 result/*
+results/*
+
+# Mac stuff:
+.DS_Store
+
+# my env specific
+autorun.sh
