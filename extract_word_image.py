@@ -7,9 +7,10 @@ import matplotlib.pyplot as plt
 
 def flatten(txt):
     def spl(t):
-        return t.split("\n")
-    flatten = lambda l: [item for sublist in l for item in sublist]
-    
+        print(t.__class__)
+        #return t.split("\n")
+        return t.split()
+    flatten = lambda l: [item for sublist in l for item in sublist]    
     txt = map(spl, txt)
     txt = flatten(txt)
     txt = filter(lambda x: x!="", txt)
@@ -18,12 +19,14 @@ def flatten(txt):
 def main(db_fname):
     with h5py.File(db_fname, 'r') as db:
         dsets = sorted(db['data'].keys())
+        print("file number="+str(len(dsets)))
         for k in dsets:
             print(k)
             rgb = db['data'][k][...]
             wordBB = db['data'][k].attrs['wordBB']
             txt = db['data'][k].attrs['txt']
             txt = flatten(txt)
+            print("text number="+str(len(txt)))
             print(txt)
 
             plt.close(1)
@@ -31,7 +34,11 @@ def main(db_fname):
             plt.imshow(rgb)
             plt.hold(True)
             H,W = rgb.shape[:2]
-            print(txt)
+            print("wordBBnum = " + str(wordBB.shape[-1]))
+            print("len(txt)  = " + str(len(txt)))
+            if wordBB.shape[-1] != len(txt):
+                print(db['data'][k].attrs['txt'])
+                print(txt)
             for i in xrange(wordBB.shape[-1]):
                 bb = wordBB[:,:,i]
                 bb = np.c_[bb,bb[:,0]]
@@ -42,6 +49,7 @@ def main(db_fname):
                 # 1 right top
                 # 2 right bottom
                 # 3 left bottom
+                print(i)
                 print(txt[i])
                 for j in xrange(4):
                     plt.scatter(bb[0,j],bb[1,j],color=vcol[j])
