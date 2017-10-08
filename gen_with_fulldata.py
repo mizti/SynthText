@@ -26,7 +26,7 @@ DATA_PATH = 'data'
 DEPTH_DB_FNAME = osp.join(DATA_PATH,'depth.h5')
 SEG_DB_FNAME = osp.join(DATA_PATH,'seg.h5')
 
-OUT_FILE = 'results/SynthText.h5'
+VALIDATION_DATA_RATE = 3 # how many images used for validation data chunk
 
 def get_data():
     return h5py.File(DEPTH_DB_FNAME, 'r'), h5py.File(SEG_DB_FNAME, 'r')
@@ -44,11 +44,16 @@ def add_res_to_db(imgname,res,db):
         db['data'][dname].attrs['wordBB'] = res[i]['wordBB']                
         db['data'][dname].attrs['txt'] = res[i]['txt']
 
-def main(viz=False):
+def main(viz=False, validation=False):
+    if validation:
+        out_file = "results/SynthTextVal.h5"
+    else:
+        out_file = "results/SynthText.h5"
+        
     # open the output h5 file:
-    out_db = h5py.File(OUT_FILE,'w')
+    out_db = h5py.File(out_file,'w')
     out_db.create_group('/data')
-    print colorize(Color.GREEN,'Storing the output in: '+OUT_FILE, bold=True)
+    print colorize(Color.GREEN,'Storing the output in: '+out_file, bold=True)
 
     # get the names of the image files in the dataset:
     imnames = []
@@ -69,6 +74,8 @@ def main(viz=False):
 
     RV3 = RendererV3(DATA_PATH,max_time=SECS_PER_IMG)
     for i in xrange(start_idx,end_idx):
+        if validation and i % VALIDATION_DATA_RATE != 0:
+            continue
         imname = imnames[i]
         try:
             # get the image:
@@ -92,8 +99,8 @@ def main(viz=False):
             seg = np.array(Image.fromarray(seg).resize(sz,Image.NEAREST))
 
             print colorize(Color.RED,'%d of %d'%(i,end_idx-1), bold=True)
-            res = RV3.render_text(img,depth,seg,area,label,
-                                                        ninstance=INSTANCE_PER_IMAGE,viz=viz)
+            print(imname)
+            res = RV3.render_text(img,depth,seg,area,label,ninstance=INSTANCE_PER_IMAGE,viz=viz)
             if len(res) > 0:
                 # non-empty : successful in placing text:
                 add_res_to_db(imname,res,out_db)
@@ -113,5 +120,7 @@ if __name__=='__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Genereate Synthetic Scene-Text Images')
     parser.add_argument('--viz',action='store_true',dest='viz',default=False,help='flag for turning on visualizations')
+    #parser.add_argument('--validation', default=False, help='If true, generate small dataset for validation')
+    parser.add_argument('--validation', '-v', action="store_true", help='debug mode')
     args = parser.parse_args()
-    main(args.viz)
+    main(args.viz, args.validation)
